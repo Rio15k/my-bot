@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-const TOKEN = '';
+
 const CLIENT_ID = '1059441199678758953';
 const GUILD_ID = '1083508846514941992'; // معرف سيرفرك
 
