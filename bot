@@ -1,0 +1,52 @@
+const { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+const TOKEN = '';
+const CLIENT_ID = '1059441199678758953';
+const GUILD_ID = '1083508846514941992'; // معرف سيرفرك
+
+// إنشاء أمر /ping
+const commands = [
+  new SlashCommandBuilder().setName('ping').setDescription('اختبار البوت')
+].map(cmd => cmd.toJSON());
+
+const rest = new REST({ version: '10' }).setToken(TOKEN);
+
+(async () => {
+  try {
+    console.log('Refreshing application (/) commands...');
+    await rest.put(
+      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+      { body: commands }
+    );
+    console.log('Successfully registered /ping command.');
+  } catch (error) {
+    console.error(error);
+  }
+})();
+
+client.on('ready', () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+});
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isCommand()) return;
+  if (interaction.commandName === 'ping') {
+    await interaction.reply('Pong! البوت شغال ✅');
+  }
+});
+
+// تنفيذ /ping تلقائي كل 24 ساعة للحفاظ على الشارة
+setInterval(async () => {
+  try {
+    const guild = await client.guilds.fetch(GUILD_ID);
+    const channel = guild.channels.cache.find(ch => ch.isTextBased());
+    if (!channel) return;
+    await channel.send('/ping');
+    console.log('Executed /ping automatically to keep badge active.');
+  } catch (err) {
+    console.error('Error executing automatic ping:', err);
+  }
+}, 24*60*60*1000);
+
+client.login(TOKEN);
